@@ -95,6 +95,7 @@ class _InteractiveChartState extends State<InteractiveChart> {
   Offset? _tapPosition;
 
   double? _prevChartWidth; // used by _handleResize
+  int? _prevVisibleCandleCount; // used by _handleResize
   late double _prevCandleWidth;
   late double _prevStartOffset;
   late Offset _initialFocalPoint;
@@ -265,6 +266,10 @@ class _InteractiveChartState extends State<InteractiveChart> {
   }
 
   _handleResize(double w) {
+    if (widget.initialVisibleCandleCount != _prevVisibleCandleCount) {
+      _prevChartWidth = null;
+      _prevVisibleCandleCount = widget.initialVisibleCandleCount;
+    }
     if (w == _prevChartWidth) return;
     if (_prevChartWidth != null) {
       // Re-clamp when size changes (e.g. screen rotation)

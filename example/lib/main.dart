@@ -16,6 +16,7 @@ class _MyAppState extends State<MyApp> {
   List<CandleData> _data = MockDataTesla.candles;
   bool _darkMode = true;
   bool _showAverage = false;
+  int _initialVisibleCandleCount = 10;
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +46,12 @@ class _MyAppState extends State<MyApp> {
                 }
               },
             ),
+            IconButton(
+              icon: Icon(
+                Icons.calendar_month,
+              ),
+              onPressed: () => _ytd(),
+            ),
           ],
         ),
         body: SafeArea(
@@ -52,6 +59,7 @@ class _MyAppState extends State<MyApp> {
           child: InteractiveChart(
             /** Only [candles] is required */
             candles: _data,
+            initialVisibleCandleCount: _initialVisibleCandleCount,
             /** Uncomment the following for examples on optional parameters */
 
             /** Example styling */
@@ -111,5 +119,26 @@ class _MyAppState extends State<MyApp> {
     for (final data in _data) {
       data.trends = [];
     }
+  }
+
+  _ytd() {
+    // set the chart range to the 'year to date' for the current calendar
+    var candleCount = 0;
+    var currentYear = 0;
+    for (int i = _data.length - 1; i >= 0; i--) {
+      var candle = _data[i];
+      var date = new DateTime.fromMillisecondsSinceEpoch(candle.timestamp);
+      if (candleCount == 0) {
+        currentYear = date.year;
+      } else if (date.year != currentYear) {
+        break;
+      }
+      candleCount++;
+    }
+    if (candleCount < 3) candleCount = 3;
+    setState(() {
+      _initialVisibleCandleCount = candleCount;
+      _data = _data;
+    });
   }
 }
